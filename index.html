@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoho Templates Manager</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css" />
+  <!-- DataTables Responsive CSS -->
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" />
+  <!-- DateRangePicker CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <!-- Tu CSS Personalizado -->
+  <!-- Tu CSS Personalizado -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="institute-colors.css">
+  <link rel="stylesheet" href="pagination.css">
+</head>
+
+<body>
+
+  <!-- Cargador global -->
+  <div id="loader" class="loading-overlay hidden">
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 fw-bold">Sincronizando...</p>
+    </div>
+  </div>
+
+  <!-- SECCIÓN LOGIN -->
+  <section id="loginSection" class="container mt-5 hidden">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="card shadow border-0 p-4">
+          <h4 class="text-center fw-bold mb-4">Gestión Zoho OSE</h4>
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" id="userInput" class="form-control" onkeypress="if(event.key==='Enter') attemptLogin()">
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Contraseña</label>
+            <input type="password" id="passInput" class="form-control"
+              onkeypress="if(event.key==='Enter') attemptLogin()">
+          </div>
+          <button class="btn btn-primary w-100 py-2 fw-bold" onclick="attemptLogin()">INGRESAR</button>
+          <div id="loginError" class="text-danger mt-3 text-center small"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN PANEL DE CONTROL -->
+  <main id="mainSection" class="container-fluid hidden p-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="main-title">Panel de Plantillas Zoho</h3>
+        <span id="rolBadge" class="badge bg-dark mt-2 p-2"></span>
+      </div>
+      <div>
+        <button id="btnNuevo" class="btn btn-success hidden me-2 fw-bold" onclick="openEdit(-1)">+ NUEVA
+          PETICIÓN</button>
+        <button class="btn btn-outline-danger" onclick="clearSession()">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="row mb-3 filter-container">
+      <div class="col-md-3">
+        <input type="text" id="dateRangeFilter" class="form-control" placeholder="📅 Fecha solicitud..." readonly>
+      </div>
+      <div class="col-md-2">
+        <select id="statusFilter" class="form-select" onchange="renderTable()">
+          <option value="">Todos los Estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Completado">Completado</option>
+          <option value="Observado">Observado</option>
+          <option value="A la espera">A la espera</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select id="brandFilter" class="form-select" onchange="renderTable()">
+          <option value="">Todas las Marcas</option>
+          <option value="JVN" class="opt-neumann">JVN</option>
+          <option value="IEMPRESA" class="opt-empresa">IEMPRESA</option>
+          <option value="BLACKWELL" class="opt-blackwell">BLACKWELL</option>
+        </select>
+      </div>
+      <div class="col-md-5 d-flex gap-2">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="fas fa-search text-secondary"></i></span>
+          <input type="text" id="nameFilter" class="form-control" placeholder="Nombre Plantilla..."
+            oninput="renderTable()">
+        </div>
+        <button class="btn btn-outline-secondary" onclick="clearFilters()" title="Limpiar filtros">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-container shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
+          <thead class="table-dark text-center" id="tableHeader">
+            <tr>
+              <th>ID</th>
+              <th>Solicitud</th>
+              <th>Marca</th>
+              <th>Oficina</th>
+              <th>Nombre Zoho</th>
+              <th>Mensaje OSE</th>
+              <th>Categoría</th>
+              <th>Selección</th>
+              <th>Estado</th>
+              <th>Creación</th>
+              <th>Comentarios</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <!-- Pagination Controls -->
+      <div id="paginationControls" class="mt-3"></div>
+    </div>
+  </main>
+
+  <!-- MODAL PARA REGISTRO Y EDICIÓN -->
+  <div class="modal fade" id="editModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Editar Registro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Tabs de Navegación (REMOVED) -->
+
+        <div class="modal-body">
+          <div id="editForm" class="row g-3">
+            <!-- Fields generated dynamically -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>
+            Cancelar</button>
+          <button type="button" class="btn btn-modal-save" onclick="saveData()"><i class="fas fa-save"></i>
+            Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+  <!-- Tu Lógica JS -->
+  <script src="index.js"></script>
+</body>
+
+</html>

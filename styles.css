@@ -1,0 +1,509 @@
+:root {
+  /* Minimalist & Professional Color Palette */
+  --primary-color: #1e293b;
+  /* Dark Slate Blue */
+  --secondary-color: #64748b;
+  /* Slate Grey */
+  --accent-color: #3b82f6;
+  /* Bright Blue */
+  --success-color: #10b981;
+  /* Emerald */
+  --warning-color: #f59e0b;
+  /* Amber */
+  --danger-color: #ef4444;
+  /* Red */
+  --info-color: #0ea5e9;
+  /* Sky */
+  --background-color: #f8fafc;
+  /* Very Light Grey/Blue */
+  --surface-color: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+
+  /* Legacy Functional Colors (Adapted) */
+  --ose-bg: #eff6ff;
+  /* blue-50 */
+  --soporte-bg: #fffbeb;
+  /* amber-50 */
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Loading Overlay - Clean & Minimal */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-overlay.hidden {
+  display: none;
+}
+
+.spinner-border {
+  color: var(--accent-color) !important;
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Layout */
+.container-fluid {
+  padding: 30px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Typography & Headers */
+.main-title {
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 0;
+  text-align: left;
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Buttons - Refined */
+.btn {
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #334155;
+  border-color: #334155;
+  transform: translateY(-1px);
+}
+
+.btn-outline-danger {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Custom Edit Button (Yellow/Black) */
+.btn-edit {
+  background-color: #fbbf24;
+  /* amber-400 */
+  color: #000;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-edit:hover {
+  background-color: #f59e0b;
+  /* amber-500 */
+  color: #000;
+  transform: translateY(-1px);
+}
+
+/* Cards - Unified Style */
+.stats-card,
+.chart-container,
+.filter-container,
+.table-container {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-container {
+  padding: 0;
+  /* Override for table container to flush edges */
+  overflow: hidden;
+}
+
+/* Filters */
+.form-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: #fff;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* DataTables Styling */
+.table {
+  width: 100% !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f1f5f9;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-bottom: 2px solid #cbd5e1;
+  /* Visible header separator */
+}
+
+.table tbody td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+  border: none;
+  border-bottom: 2px solid #cbd5e1;
+  /* Reduced thickness separator */
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+  background-color: #f8fafc;
+}
+
+/* --- FUNCTIONAL CLASSES (Retained & Adapted) --- */
+
+/* Colores de celdas por rol */
+.col-ose {
+  background-color: var(--ose-bg) !important;
+  /* blue-400 */
+}
+
+.col-soporte {
+  background-color: var(--soporte-bg) !important;
+  /* amber-400 */
+}
+
+/* Campos de solo lectura */
+.field-preview {
+  background-color: #f1f5f9 !important;
+  /* slate-100 */
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px dashed var(--border-color);
+}
+
+/* Estilo para la fila de detalle expandible */
+.detail-row {
+  background-color: #f8fafc;
+  display: none;
+}
+
+.detail-row.show {
+  display: table-row !important;
+}
+
+/* Detail UI - Refined */
+.detail-container {
+  padding: 20px;
+  background-color: #f1f5f9;
+  border-top: 2px solid var(--border-color);
+}
+
+.detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: 100%;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.detail-header {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+}
+
+.detail-header.obs-header {
+  color: var(--info-color);
+}
+
+.detail-field {
+  margin-bottom: 1.25rem;
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  /* slate-400 */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  border-left: 3px solid var(--primary-color);
+  padding-left: 0.75rem;
+  min-height: 1.5rem;
+}
+
+.obs-value {
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--info-color);
+}
+
+/* Toggle Icon */
+.toggle-icon {
+  color: var(--danger-color);
+  /* Red per image reference */
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.clickable-row.expanded .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.clickable-row:hover {
+  background-color: #eff6ff !important;
+  /* blue-50 */
+}
+
+/* Badges & Status - Refined & Subtle */
+.estado-badge {
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+/* Subtle pastel backgrounds with darker text */
+.estado-completado {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.estado-observado {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.estado-espera {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.estado-pendiente {
+  background-color: #e0f2fe;
+  color: #075985;
+}
+
+/* Modal Updates */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Modal Updates - Tabbed Design */
+.modal-content {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  background-color: white;
+  padding: 1.5rem;
+  border-bottom: none;
+}
+
+.modal-title {
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+/* Custom Tabs */
+.nav-tabs {
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: #64748b;
+  font-weight: 500;
+  padding: 1rem 0;
+  margin-right: 2rem;
+  background: transparent;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--accent-color);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--accent-color);
+  background: transparent;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-color);
+}
+
+.modal-body {
+  padding: 0 1.5rem 2rem 1.5rem;
+}
+
+/* Modal Form Fields */
+.modal-label-icon {
+  margin-right: 6px;
+  color: #64748b;
+  width: 16px;
+  text-align: center;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.4rem;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Modal Footer */
+.modal-footer {
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  background-color: white;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-modal-cancel {
+  background-color: #64748b;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-modal-save {
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-modal-save:hover {
+  background-color: #0f172a;
+  color: white;
+}
+
+/* Flatpickr overrides to match */
+.flatpickr-calendar {
+  font-family: inherit !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid var(--border-color) !important;
+}

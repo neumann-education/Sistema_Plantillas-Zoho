@@ -1,0 +1,32 @@
+/* Pagination Styles */
+.pagination {
+    margin-top: 1rem;
+}
+
+.pagination .page-link {
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #cbd5e1;
+    cursor: not-allowed;
+    background-color: #f8fafc;
+}
