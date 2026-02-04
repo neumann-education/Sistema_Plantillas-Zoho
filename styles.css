@@ -317,14 +317,17 @@ body {
 
 /* Toggle Icon */
 .toggle-icon {
-  color: var(--danger-color);
-  /* Red per image reference */
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  color: #10b981;
+  /* Green color instead of red */
+  font-size: 1.1rem;
 }
 
 .clickable-row.expanded .toggle-icon {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
+  color: #059669;
+  /* Darker green when expanded */
 }
 
 .clickable-row {
