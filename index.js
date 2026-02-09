@@ -103,6 +103,23 @@ function showDashboard(res) {
   if (res.rol.startsWith("OSE_")) document.getElementById('btnNuevo').classList.remove('hidden');
   initFilters();
   loadData();
+  setupCopyButtons();
+}
+
+/**
+ * Setup event delegation for copy buttons
+ */
+function setupCopyButtons() {
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.copy-btn')) {
+      e.stopPropagation();
+      const btn = e.target.closest('.copy-btn');
+      const encodedText = btn.getAttribute('data-copy-text');
+      const fieldName = btn.getAttribute('data-field-name');
+      const text = decodeURIComponent(encodedText);
+      copyToClipboard(text, fieldName);
+    }
+  });
 }
 
 /**
@@ -400,7 +417,7 @@ async function renderTable() {
                     <div class="detail-field">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="detail-label">Plantilla Mensaje (OSE)</span>
-                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); copyToClipboard('${f[5]?.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', 'Plantilla OSE')" title="Copiar al portapapeles">
+                        <button class="btn btn-sm btn-outline-primary copy-btn" data-copy-text="${encodeURIComponent(f[5] || '')}" data-field-name="Plantilla OSE" title="Copiar al portapapeles">
                           <i class="fas fa-copy"></i> Copiar
                         </button>
                       </div>
@@ -409,7 +426,7 @@ async function renderTable() {
                     <div class="detail-field">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="detail-label">Plantilla Final (ZOHO)</span>
-                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); copyToClipboard('${f[8]?.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', 'Plantilla ZOHO')" title="Copiar al portapapeles">
+                        <button class="btn btn-sm btn-outline-primary copy-btn" data-copy-text="${encodeURIComponent(f[8] || '')}" data-field-name="Plantilla ZOHO" title="Copiar al portapapeles">
                           <i class="fas fa-copy"></i> Copiar
                         </button>
                       </div>
