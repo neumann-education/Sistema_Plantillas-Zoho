@@ -37,6 +37,18 @@
     /* Orange 100 */
 }
 
+/* ITAE – Pastel Green SUAVE */
+.table tbody tr.row-itae>* {
+    background-color: #f0fdf4 !important;
+    /* Emerald 50 */
+    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
+}
+
+.table tbody tr.row-itae:hover>* {
+    background-color: #dcfce7 !important;
+    /* Emerald 100 */
+}
+
 /* ===== BADGES / SELECT / TEXTO (color institucional real) ===== */
 
 .bg-blackwell {
@@ -54,6 +66,11 @@
     color: #7c2d12;
 }
 
+.bg-itae {
+    background-color: #dcfce7 !important;
+    color: #064e3b;
+}
+
 /* Option styling (support varies by browser) */
 option.opt-blackwell {
     background-color: #f0f9ff;
@@ -68,4 +85,9 @@ option.opt-neumann {
 option.opt-empresa {
     background-color: #fff7ed;
     color: #7c2d12;
+}
+
+option.opt-itae {
+    background-color: #f0fdf4;
+    color: #064e3b;
 }

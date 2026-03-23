@@ -365,6 +365,9 @@ async function renderTable() {
       } else if (brandUpper.includes("BLACKWELL")) {
         marcaClass = "row-blackwell";
         badgeClass = "badge bg-blackwell border border-light";
+      } else if (brandUpper.includes("ITAE")) {
+        marcaClass = "row-itae";
+        badgeClass = "badge bg-itae border border-light";
       }
 
       // Mapeo de datos a la fila principal
