@@ -14,7 +14,7 @@ const recordsPerPage = 10;
 
 // Listas desplegables configurables
 const OPCIONES = {
-  3: ["OSE online", "OSE presencial", "OSE ambos", "Registros", "Titulación", "OSE retención", "OSE seguimiento"],
+  3: ["Área de cobranzas", "OSE online", "OSE presencial", "OSE ambos", "Registros", "Titulación", "OSE retención", "OSE seguimiento"],
   6: ["Marketing", "Utility"],
   9: ["Pendiente", "Completado", "Observado", "A la espera"]
 };
