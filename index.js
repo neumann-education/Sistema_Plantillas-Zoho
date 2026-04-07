@@ -50,9 +50,9 @@ function clearSession() {
 /**
  * COMUNICACIÓN CON EL SERVIDOR
  */
-async function callAPI(payload) {
+async function callAPI(payload, silent = false) {
   const loader = document.getElementById('loader');
-  if (loader) loader.classList.remove('hidden');
+  if (loader && !silent) loader.classList.remove('hidden');
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -177,11 +177,38 @@ function clearFilters() {
  * Carga datos del servidor (Solo sucede al inicio o guardar)
  */
 async function loadData() {
-  const res = await callAPI({ action: 'getData', rol: userData.rol });
+  renderSkeleton();
+  const res = await callAPI({ action: 'getData', rol: userData.rol }, true);
   if (res && res.success) {
     currentData = res.data;
     renderTable();
   }
+}
+
+/**
+ * RENDER SKELETON LOADER
+ */
+function renderSkeleton() {
+  const isSoporte = userData.rol === "SOPORTE";
+  const bodyElement = document.getElementById('tableBody');
+  const totalCols = isSoporte ? 8 : 7;
+  let html = "";
+
+  for (let i = 0; i < 6; i++) {
+    html += `<tr class="skeleton-row">`;
+    for (let j = 0; j < totalCols; j++) {
+      let content = `<div class="skeleton skeleton-text"></div>`;
+      // Personalizar algunas celdas para que parezcan badges o botones
+      if ((isSoporte && [2, 6].includes(j)) || (!isSoporte && [1, 5].includes(j))) {
+        content = `<div class="skeleton skeleton-badge"></div>`;
+      } else if (j === totalCols - 1) {
+        content = `<div class="skeleton skeleton-btn"></div>`;
+      }
+      html += `<td class="text-center">${content}</td>`;
+    }
+    html += `</tr>`;
+  }
+  bodyElement.innerHTML = html;
 }
 
 /**
@@ -392,14 +419,14 @@ async function renderTable() {
           <td colspan="${totalCols}">
             <div class="detail-container">
               <div class="row g-4">
-                <!-- Columna Izquierda: Info Alumno (Simulada con datos disponibles) -->
+                <!-- Columna Izquierda: Info Registro -->
                 <div class="col-md-6">
                   <div class="detail-card">
-                    <h6 class="detail-header"><i class="fas fa-user-circle"></i> Información del Registro</h6>
+                    <h6 class="detail-header"><i class="fas fa-fingerprint"></i> Información del Registro</h6>
                     <div class="row">
                        <div class="col-md-6 detail-field">
                          <span class="detail-label">ID Registro</span>
-                         <span class="detail-value">${f[0]}</span>
+                         <span class="detail-value text-primary">${f[0]}</span>
                        </div>
                        <div class="col-md-6 detail-field">
                          <span class="detail-label">Fecha Creación</span>
@@ -442,9 +469,9 @@ async function renderTable() {
 
                 <!-- Fila Inferior: Observaciones (Solo si hay contenido) -->
                 ${(f[11] && f[11].trim() !== "") ? `
-                <div class="col-12">
+                <div class="col-12 mt-4">
                    <div class="detail-card">
-                     <h6 class="detail-header obs-header"><i class="fas fa-eye"></i> Comentarios / Observaciones</h6>
+                     <h6 class="detail-header obs-header"><i class="fas fa-comment-dots"></i> Comentarios y Observaciones</h6>
                      <div class="obs-value">${f[11]}</div>
                    </div>
                 </div>` : ''}
