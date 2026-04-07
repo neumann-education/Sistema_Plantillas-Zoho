@@ -14,7 +14,7 @@ const recordsPerPage = 10;
 
 // Listas desplegables configurables
 const OPCIONES = {
-  3: ["OSE online", "OSE presencial", "OSE ambos", "Registros", "Titulación", "OSE retención", "OSE seguimiento"],
+  3: ["Área de cobranzas", "OSE online", "OSE presencial", "OSE ambos", "Registros", "Titulación", "OSE retención", "OSE seguimiento"],
   6: ["Marketing", "Utility"],
   9: ["Pendiente", "Completado", "Observado", "A la espera"]
 };
@@ -268,7 +268,7 @@ async function renderTable() {
     </tr>`;
 
     if (isSoporte) {
-      headerHtml = `<tr><th>ID</th><th>FECHA SOLICITUD</th><th class="text-center">MARCA</th><th class="text-center">OFICINA</th><th>NOMBRE PLANTILLA ZOHO</th><th class="text-center">CATEGORÍA</th><th class="text-center">ESTADO</th><th class="text-center">ACCIÓN</th></tr>`;
+      headerHtml = `<tr><th class="col-id">ID</th><th>FECHA SOLICITUD</th><th class="text-center">MARCA</th><th class="text-center">OFICINA</th><th>NOMBRE PLANTILLA ZOHO</th><th class="text-center">CATEGORÍA</th><th class="text-center">ESTADO</th><th class="text-center">ACCIÓN</th></tr>`;
     }
     headerElement.innerHTML = headerHtml;
 
@@ -373,7 +373,7 @@ async function renderTable() {
       // Mapeo de datos a la fila principal
       bodyHtml += `
         <tr class="clickable-row ${marcaClass}" onclick="toggleRow(${i})">
-          ${isSoporte ? `<td class="fw-bold ps-4"><i id="icon-${i}" class="fas fa-plus-circle toggle-icon me-2"></i>${f[0]}</td>` : ''}
+          ${isSoporte ? `<td class="fw-bold ps-4 col-id"><i id="icon-${i}" class="fas fa-plus-circle toggle-icon me-2"></i>${f[0]}</td>` : ''}
           <td class="${isSoporte ? '' : 'ps-4'}">
             ${!isSoporte ? `<i id="icon-${i}" class="fas fa-plus-circle toggle-icon me-2"></i>` : ''}
             ${fechaSolicitudVisual}
