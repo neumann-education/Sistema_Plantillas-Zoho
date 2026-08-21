@@ -1,93 +1,91 @@
-/* Institute Colors - Row Backgrounds */
-/* Tonalidades suaves para no competir con badges */
+/* ==========================================================================
+   INSTITUTE COLORS - SUTIL, LIMPIO & MINIMALISTA
+   ========================================================================== */
 
-/* Blackwell Global – Pastel Blue SUAVE */
-.table tbody tr.row-blackwell>* {
-    background-color: #f0f9ff !important;
-    /* Sky 50 */
-    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
+/* Bordes laterales sutiles para identificar la marca en cada fila */
+.table tbody tr.row-blackwell {
+  border-left: 3.5px solid #0284c7 !important;
 }
 
-.table tbody tr.row-blackwell:hover>* {
-    background-color: #e0f2fe !important;
-    /* Sky 100 */
+.table tbody tr.row-blackwell:hover > * {
+  background-color: #f0f9ff !important;
 }
 
-/* Jhonn Vonn Neumann – Pastel Purple SUAVE */
-.table tbody tr.row-neumann>* {
-    background-color: #faf5ff !important;
-    /* Purple 50 */
-    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
+.table tbody tr.row-neumann {
+  border-left: 3.5px solid #8b5cf6 !important;
 }
 
-.table tbody tr.row-neumann:hover>* {
-    background-color: #f3e8ff !important;
-    /* Purple 100 */
+.table tbody tr.row-neumann:hover > * {
+  background-color: #faf5ff !important;
 }
 
-/* Instituto de la Empresa – Pastel Orange SUAVE */
-.table tbody tr.row-empresa>* {
-    background-color: #fff7ed !important;
-    /* Orange 50 */
-    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
+.table tbody tr.row-empresa {
+  border-left: 3.5px solid #f97316 !important;
 }
 
-.table tbody tr.row-empresa:hover>* {
-    background-color: #ffedd5 !important;
-    /* Orange 100 */
+.table tbody tr.row-empresa:hover > * {
+  background-color: #fff7ed !important;
 }
 
-/* ITAE – Pastel Green SUAVE */
-.table tbody tr.row-itae>* {
-    background-color: #f0fdf4 !important;
-    /* Emerald 50 */
-    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0);
+.table tbody tr.row-itae {
+  border-left: 3.5px solid #10b981 !important;
 }
 
-.table tbody tr.row-itae:hover>* {
-    background-color: #dcfce7 !important;
-    /* Emerald 100 */
+.table tbody tr.row-itae:hover > * {
+  background-color: #f0fdf4 !important;
 }
 
-/* ===== BADGES / SELECT / TEXTO (color institucional real) ===== */
-
-.bg-blackwell {
-    background-color: #dbeafe !important;
-    color: #1e3a8a;
+/* ===== BADGES DE MARCA / INSTITUCIÓN ===== */
+.badge-brand {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
 }
 
-.bg-neumann {
-    background-color: #ede9fe !important;
-    color: #4c1d95;
+.brand-blackwell {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
 }
 
-.bg-empresa {
-    background-color: #ffedd5 !important;
-    color: #7c2d12;
+.brand-jvn {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
 }
 
-.bg-itae {
-    background-color: #dcfce7 !important;
-    color: #064e3b;
+.brand-iempresa {
+  background-color: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
 }
 
-/* Option styling (support varies by browser) */
+.brand-itae {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* Compatibilidad legacy con selects */
 option.opt-blackwell {
-    background-color: #f0f9ff;
-    color: #1e3a8a;
+  background-color: #f0f9ff;
+  color: #0369a1;
 }
 
 option.opt-neumann {
-    background-color: #faf5ff;
-    color: #4c1d95;
+  background-color: #faf5ff;
+  color: #6b21a8;
 }
 
 option.opt-empresa {
-    background-color: #fff7ed;
-    color: #7c2d12;
+  background-color: #fff7ed;
+  color: #9a3412;
 }
 
 option.opt-itae {
-    background-color: #f0fdf4;
-    color: #064e3b;
+  background-color: #f0fdf4;
+  color: #15803d;
 }

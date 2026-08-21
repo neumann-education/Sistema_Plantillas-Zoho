@@ -76,16 +76,65 @@ async function callAPI(payload, silent = false) {
 /**
  * LOGIN
  */
-async function attemptLogin() {
-  const user = document.getElementById('userInput').value;
-  const pass = document.getElementById('passInput').value;
-  if (!user || !pass) return Swal.fire('Error', 'Por favor, ingrese sus credenciales.', 'warning');
-  const res = await callAPI({ action: 'login', user, pass });
-  if (res && res.success) {
-    saveSession(res);
-    showDashboard(res);
+function togglePasswordVisibility() {
+  const passInput = document.getElementById('passInput');
+  const icon = document.getElementById('togglePasswordIcon');
+  if (!passInput || !icon) return;
+
+  if (passInput.type === 'password') {
+    passInput.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
   } else {
-    document.getElementById('loginError').innerText = res ? res.message : "Error de conexión.";
+    passInput.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+}
+
+async function attemptLogin() {
+  const userInput = document.getElementById('userInput');
+  const passInput = document.getElementById('passInput');
+  const loginError = document.getElementById('loginError');
+  const btnLogin = document.getElementById('btnLogin');
+
+  const user = userInput ? userInput.value.trim() : '';
+  const pass = passInput ? passInput.value.trim() : '';
+
+  if (!user || !pass) {
+    if (loginError) {
+      loginError.innerText = 'Por favor, ingrese usuario y contraseña.';
+      loginError.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (loginError) {
+    loginError.innerText = '';
+    loginError.classList.add('hidden');
+  }
+
+  if (btnLogin) {
+    btnLogin.disabled = true;
+    btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Validando...';
+  }
+
+  try {
+    const res = await callAPI({ action: 'login', user, pass });
+    if (res && res.success) {
+      saveSession(res);
+      showDashboard(res);
+    } else {
+      if (loginError) {
+        loginError.innerText = res ? res.message : "Error de credenciales o de conexión.";
+        loginError.classList.remove('hidden');
+      }
+    }
+  } finally {
+    if (btnLogin) {
+      btnLogin.disabled = false;
+      btnLogin.innerHTML = '<span>INGRESAR</span><i class="fas fa-arrow-right ms-2"></i>';
+    }
   }
 }
 
@@ -99,8 +148,32 @@ function showDashboard(res) {
   userData = res;
   document.getElementById('loginSection').classList.add('hidden');
   document.getElementById('mainSection').classList.remove('hidden');
-  document.getElementById('rolBadge').innerText = `SESIÓN: ${res.nombre.toUpperCase()} | ROL: ${res.rol}`;
-  if (res.rol.startsWith("OSE_")) document.getElementById('btnNuevo').classList.remove('hidden');
+  
+  // Actualizar perfil de usuario en el header
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  const userRoleBadge = document.getElementById('userRoleBadge');
+  const rolBadge = document.getElementById('rolBadge');
+
+  if (userNameDisplay) userNameDisplay.innerText = res.nombre || 'Usuario';
+  if (userRoleBadge) {
+    userRoleBadge.innerText = res.rol || '';
+    if (res.rol === 'SOPORTE') {
+      userRoleBadge.className = 'user-role-badge role-soporte';
+    } else {
+      userRoleBadge.className = 'user-role-badge role-ose';
+    }
+  }
+  if (rolBadge) rolBadge.innerText = `SESIÓN: ${res.nombre.toUpperCase()} | ROL: ${res.rol}`;
+
+  const btnNuevo = document.getElementById('btnNuevo');
+  if (btnNuevo) {
+    if (res.rol && res.rol.startsWith("OSE_")) {
+      btnNuevo.classList.remove('hidden');
+    } else {
+      btnNuevo.classList.add('hidden');
+    }
+  }
+
   initFilters();
   loadData();
   setupCopyButtons();
@@ -217,7 +290,7 @@ function renderSkeleton() {
  */
 function toggleRow(index) {
   const row = document.getElementById(`detail-${index}`);
-  const mainRow = document.querySelector(`.clickable-row[onclick="toggleRow(${index})"]`);
+  const mainRow = document.getElementById(`main-row-${index}`) || document.querySelector(`.clickable-row[onclick="toggleRow(${index})"]`);
   const icon = document.getElementById(`icon-${index}`);
 
   if (row) {
@@ -225,15 +298,15 @@ function toggleRow(index) {
       row.classList.remove('show');
       if (mainRow) mainRow.classList.remove('expanded');
       if (icon) {
-        icon.classList.remove('fa-minus-circle');
-        icon.classList.add('fa-plus-circle');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-right');
       }
     } else {
       row.classList.add('show');
       if (mainRow) mainRow.classList.add('expanded');
       if (icon) {
-        icon.classList.remove('fa-plus-circle');
-        icon.classList.add('fa-minus-circle');
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-down');
       }
     }
   }
@@ -276,8 +349,6 @@ function copyToClipboard(text, fieldName) {
 }
 
 async function renderTable() {
-
-  // Usamos currentData que ya está en memoria
   if (currentData.length > 0) {
     const isSoporte = userData.rol === "SOPORTE";
     const headerElement = document.getElementById('tableHeader');
@@ -295,7 +366,16 @@ async function renderTable() {
     </tr>`;
 
     if (isSoporte) {
-      headerHtml = `<tr><th class="col-id">ID</th><th>FECHA SOLICITUD</th><th class="text-center">MARCA</th><th class="text-center">OFICINA</th><th>NOMBRE PLANTILLA ZOHO</th><th class="text-center">CATEGORÍA</th><th class="text-center">ESTADO</th><th class="text-center">ACCIÓN</th></tr>`;
+      headerHtml = `<tr>
+        <th class="col-id ps-4">ID</th>
+        <th>FECHA SOLICITUD</th>
+        <th class="text-center">MARCA</th>
+        <th class="text-center">OFICINA</th>
+        <th>NOMBRE PLANTILLA ZOHO</th>
+        <th class="text-center">CATEGORÍA</th>
+        <th class="text-center">ESTADO</th>
+        <th class="text-center">ACCIÓN</th>
+      </tr>`;
     }
     headerElement.innerHTML = headerHtml;
 
@@ -370,48 +450,48 @@ async function renderTable() {
       const f = item.data;
 
       // --- PROCESAMIENTO DE FECHAS PARA LA VISTA ---
-      // Formateamos Fecha de Solicitud
       const fechaSolicitudVisual = formatShortDate(f[1]);
-
-      // Formateamos Fecha de Creación (f[10]). Si está vacío o es nulo, mostramos "Pendiente"
       const fechaCreacionVisual = (f[10] && f[10] !== "" && f[10] !== "---")
         ? formatShortDate(f[10])
         : "Pendiente";
 
       // --- ESTILOS INSTITUCIONALES ---
-      let marcaClass = ""; // Clase para la fila
-      let badgeClass = "badge bg-light text-dark border"; // Clase por defecto para el badge
+      let marcaClass = "";
+      let badgeClass = "badge-brand";
 
       const brandUpper = (f[2] || "").trim().toUpperCase();
       if (brandUpper.includes("JVN") || brandUpper.includes("NEUMANN")) {
         marcaClass = "row-neumann";
-        badgeClass = "badge bg-neumann border border-light";
+        badgeClass = "badge-brand brand-jvn";
       } else if (brandUpper.includes("IEMPRESA")) {
         marcaClass = "row-empresa";
-        badgeClass = "badge bg-empresa border border-light";
+        badgeClass = "badge-brand brand-iempresa";
       } else if (brandUpper.includes("BLACKWELL")) {
         marcaClass = "row-blackwell";
-        badgeClass = "badge bg-blackwell border border-light";
+        badgeClass = "badge-brand brand-blackwell";
       } else if (brandUpper.includes("ITAE")) {
         marcaClass = "row-itae";
-        badgeClass = "badge bg-itae border border-light";
+        badgeClass = "badge-brand brand-itae";
       }
 
       // Mapeo de datos a la fila principal
       bodyHtml += `
-        <tr class="clickable-row ${marcaClass}" onclick="toggleRow(${i})">
-          ${isSoporte ? `<td class="fw-bold ps-4 col-id"><i id="icon-${i}" class="fas fa-plus-circle toggle-icon me-2"></i>${f[0]}</td>` : ''}
+        <tr id="main-row-${i}" class="clickable-row ${marcaClass}" onclick="toggleRow(${i})">
+          ${isSoporte ? `<td class="ps-4 col-id">
+            <span class="row-expander"><i id="icon-${i}" class="fas fa-chevron-right"></i></span>
+            <span class="row-id-badge">${f[0]}</span>
+          </td>` : ''}
           <td class="${isSoporte ? '' : 'ps-4'}">
-            ${!isSoporte ? `<i id="icon-${i}" class="fas fa-plus-circle toggle-icon me-2"></i>` : ''}
-            ${fechaSolicitudVisual}
+            ${!isSoporte ? `<span class="row-expander"><i id="icon-${i}" class="fas fa-chevron-right"></i></span>` : ''}
+            <span class="row-date-text">${fechaSolicitudVisual}</span>
           </td>
           <td class="text-center"><span class="${badgeClass}">${f[2]}</span></td>
-          <td class="col-ose text-center">${f[3]}</td>
-          <td class="col-ose">${f[4]}</td>
-          <td class="text-center">${f[6]}</td>
+          <td class="text-center text-secondary small">${f[3]}</td>
+          <td class="fw-semibold text-dark">${f[4]}</td>
+          <td class="text-center"><span class="category-pill">${f[6]}</span></td>
           <td class="text-center">${getStatusBadge(f[9])}</td>
           <td class="text-center" onclick="event.stopPropagation()">
-            <button class="btn btn-edit btn-sm" onclick="openEdit(${i})"><i class="fas fa-edit me-1"></i> Editar</button>
+            <button class="btn btn-action-edit" onclick="openEdit(${i})"><i class="fas fa-pen-to-square me-1"></i> Editar</button>
           </td>
         </tr>
         
@@ -423,7 +503,7 @@ async function renderTable() {
                 <div class="col-md-6">
                   <div class="detail-card">
                     <h6 class="detail-header"><i class="fas fa-fingerprint"></i> Información del Registro</h6>
-                    <div class="row">
+                    <div class="row g-3">
                        <div class="col-md-6 detail-field">
                          <span class="detail-label">ID Registro</span>
                          <span class="detail-value text-primary">${f[0]}</span>
@@ -432,7 +512,7 @@ async function renderTable() {
                          <span class="detail-label">Fecha Creación</span>
                          <span class="detail-value">${fechaCreacionVisual}</span>
                        </div>
-                       <div class="col-md-12 detail-field">
+                       <div class="col-12 detail-field">
                          <span class="detail-label">Selección (OSE)</span>
                          <span class="detail-value">${f[7] || '---'}</span>
                        </div>
@@ -444,32 +524,30 @@ async function renderTable() {
                 <div class="col-md-6">
                   <div class="detail-card">
                     <h6 class="detail-header"><i class="fas fa-file-alt"></i> Detalles de la Plantilla</h6>
-                    <div class="detail-field">
-                      <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="detail-field mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="detail-label">Plantilla Mensaje (OSE)</span>
-                        <button class="btn btn-sm btn-outline-primary copy-btn" data-copy-text="${encodeURIComponent(f[5] || '')}" data-field-name="Plantilla OSE" title="Copiar al portapapeles">
-                          <i class="fas fa-copy"></i> Copiar
+                        <button class="btn btn-sm btn-detail-copy copy-btn" data-copy-text="${encodeURIComponent(f[5] || '')}" data-field-name="Plantilla OSE" title="Copiar al portapapeles">
+                          <i class="fas fa-copy me-1"></i> Copiar
                         </button>
                       </div>
-                      <div class="detail-value" style="height: auto; max-height: 80px; overflow-y: auto;">${f[5]}</div>
+                      <div class="detail-value-box">${f[5] || '---'}</div>
                     </div>
                     <div class="detail-field">
-                      <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="detail-label">Plantilla Final (ZOHO)</span>
-                        <button class="btn btn-sm btn-outline-primary copy-btn" data-copy-text="${encodeURIComponent(f[8] || '')}" data-field-name="Plantilla ZOHO" title="Copiar al portapapeles">
-                          <i class="fas fa-copy"></i> Copiar
+                        <button class="btn btn-sm btn-detail-copy copy-btn" data-copy-text="${encodeURIComponent(f[8] || '')}" data-field-name="Plantilla ZOHO" title="Copiar al portapapeles">
+                          <i class="fas fa-copy me-1"></i> Copiar
                         </button>
                       </div>
-                      <div class="detail-value" style="font-family: monospace;">${f[8] || 'Aún no generado'}</div>
+                      <div class="detail-value-box monospace-box">${f[8] || 'Aún no generado'}</div>
                     </div>
                   </div>
                 </div>
 
-                </div>
-
                 <!-- Fila Inferior: Observaciones (Solo si hay contenido) -->
                 ${(f[11] && f[11].trim() !== "") ? `
-                <div class="col-12 mt-4">
+                <div class="col-12">
                    <div class="detail-card">
                      <h6 class="detail-header obs-header"><i class="fas fa-comment-dots"></i> Comentarios y Observaciones</h6>
                      <div class="obs-value">${f[11]}</div>
@@ -554,19 +632,27 @@ function changePage(page) {
 }
 
 /**
- * Helper para obtener el badge de estado
+ * Helper para obtener el badge de estado moderno con dot indicator
  * @param {string} status 
  */
 function getStatusBadge(status) {
   if (!status) return "";
-  let cssClass = "estado-pendiente"; // Default (azul claro)
+  let cssClass = "status-pendiente";
+  let dotClass = "dot-pendiente";
 
   const s = status.toLowerCase();
-  if (s.includes("completado")) cssClass = "estado-completado"; // Verde
-  else if (s.includes("observado")) cssClass = "estado-observado"; // Amarillo
-  else if (s.includes("espera")) cssClass = "estado-espera"; // Rojo
+  if (s.includes("completado")) {
+    cssClass = "status-completado";
+    dotClass = "dot-completado";
+  } else if (s.includes("observado")) {
+    cssClass = "status-observado";
+    dotClass = "dot-observado";
+  } else if (s.includes("espera")) {
+    cssClass = "status-espera";
+    dotClass = "dot-espera";
+  }
 
-  return `<span class="estado-badge ${cssClass}">${status}</span>`;
+  return `<span class="modern-status-badge ${cssClass}"><span class="status-dot ${dotClass}"></span>${status}</span>`;
 }
 
 /**
@@ -602,6 +688,11 @@ function openEdit(index) {
   const isSoporte = userData.rol === "SOPORTE";
   const isOSE = userData.rol.startsWith("OSE_");
 
+  const modalTitle = document.getElementById("modalTitle");
+  const modalSubtitle = document.getElementById("modalSubtitle");
+  const modalTitleIcon = document.getElementById("modalTitleIcon");
+  const modalRecordBadge = document.getElementById("modalRecordBadge");
+
   if (isNewRecord) {
     const marca = userData.rol.replace("OSE_", "");
     const correlativo = currentData.length;
@@ -610,24 +701,45 @@ function openEdit(index) {
     row[1] = formatShortDate(`${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`);
     row[2] = marca;
     row[9] = "Pendiente";
-    document.getElementById("modalTitle").innerText = "Nuevo Registro";
+    
+    if (modalTitle) modalTitle.innerText = "Nueva Petición";
+    if (modalSubtitle) modalSubtitle.innerText = "Registra una nueva solicitud de plantilla de mensajería";
+    if (modalTitleIcon) modalTitleIcon.innerHTML = '<i class="fas fa-plus"></i>';
+    if (modalRecordBadge) modalRecordBadge.innerText = row[0];
   } else {
-    document.getElementById("modalTitle").innerText = "Editar Registro";
+    if (modalTitle) modalTitle.innerText = "Editar Registro";
+    if (modalSubtitle) modalSubtitle.innerText = "Gestiona los parámetros y contenido de la plantilla";
+    if (modalTitleIcon) modalTitleIcon.innerHTML = '<i class="fas fa-pen-to-square"></i>';
+    if (modalRecordBadge) modalRecordBadge.innerText = row[0] || '';
   }
 
   // Limpiar contenedor de formulario
   const formContainer = document.getElementById("editForm");
   formContainer.innerHTML = "";
 
-  const labels = ["ID", "Fecha Solicitud", "Marca", "Oficina", "Nombre Plantilla Zoho", "Plantilla OSE", "Categoría", "Selección", "Plantilla Zoho Final", "Estado", "Fecha Creación", "Comentarios"];
+  const labels = [
+    "ID Registro", 
+    "Fecha Solicitud", 
+    "Marca", 
+    "Oficina", 
+    "Nombre Plantilla Zoho", 
+    "Plantilla Mensaje (OSE)", 
+    "Categoría", 
+    "Selección", 
+    "Plantilla Final (ZOHO)", 
+    "Estado", 
+    "Fecha Creación", 
+    "Comentarios y Observaciones"
+  ];
 
-  labels.forEach((label, i) => {
-    // Lógica de visibilidad OSE
-    if (isOSE && (i > 5 && i !== 7)) return;
+  // Helper para generar el HTML de un campo individual
+  function renderField(i, colClass = "col-md-6") {
+    // Si es OSE y no debe ver este campo, no renderizar
+    if (isOSE && (i > 5 && i !== 7)) return "";
 
     let isReadOnly = "disabled";
     let extraClass = "";
-    let valueToShow = row[i];
+    let valueToShow = row[i] || "";
 
     if ((i === 1 || i === 10) && valueToShow && valueToShow !== "") {
       valueToShow = formatShortDate(valueToShow);
@@ -636,30 +748,85 @@ function openEdit(index) {
     if (isOSE && [3, 4, 5, 7].includes(i)) isReadOnly = "";
     if (isSoporte && [2, 3, 4, 5, 6, 7, 8, 9, 11].includes(i)) isReadOnly = "";
 
-    // Construir HTML del campo
-    let fieldHtml = `<div class="col-md-6 mb-3">
-               <label class="form-label"><i class="${FIELD_ICONS[i]} modal-label-icon"></i>${label}</label>`;
+    const isFieldDisabled = isReadOnly === "disabled";
+    const readonlyClass = isFieldDisabled ? "field-readonly" : "";
+
+    let html = `<div class="${colClass} mb-3">
+      <label class="modal-form-label mb-1">
+        <span class="label-title-wrapper">
+          <i class="${FIELD_ICONS[i]} modal-field-icon"></i>
+          <span>${labels[i]}</span>
+        </span>
+        ${isFieldDisabled ? '<span class="readonly-tag"><i class="fas fa-lock me-1"></i>Bloqueado</span>' : ''}
+      </label>`;
 
     if (OPCIONES[i]) {
-      fieldHtml += `<select id="edit-${i}" class="form-select ${extraClass}" ${isReadOnly}>`;
+      html += `<select id="edit-${i}" class="form-select modal-form-control ${readonlyClass}" ${isReadOnly}>`;
       OPCIONES[i].forEach(opt => {
-        fieldHtml += `<option value="${opt}" ${valueToShow == opt ? 'selected' : ''}>${opt}</option>`;
+        html += `<option value="${opt}" ${valueToShow == opt ? 'selected' : ''}>${opt}</option>`;
       });
-      fieldHtml += `</select>`;
+      html += `</select>`;
     } else if ([5, 8, 11].includes(i)) {
-      fieldHtml += `<textarea id="edit-${i}" class="form-control ${extraClass}" rows="4" ${isReadOnly}>${valueToShow}</textarea>`;
+      const isMonospace = (i === 8) ? "monospace-textarea" : "";
+      html += `<textarea id="edit-${i}" class="form-control modal-form-control ${isMonospace} ${readonlyClass}" rows="${i === 11 ? 3 : 4}" placeholder="Escribe aquí..." ${isReadOnly}>${valueToShow}</textarea>`;
     } else {
-      fieldHtml += `<input type="text" id="edit-${i}" class="form-control ${extraClass}" value="${valueToShow}" ${isReadOnly}>`;
-    }
-    fieldHtml += `</div>`;
-
-    // Ajustar campos de texto largo a ancho completo
-    if ([5, 8, 11].includes(i)) {
-      fieldHtml = fieldHtml.replace("col-md-6", "col-12");
+      html += `<input type="text" id="edit-${i}" class="form-control modal-form-control ${readonlyClass}" value="${valueToShow}" ${isReadOnly}>`;
     }
 
-    formContainer.innerHTML += fieldHtml;
-  });
+    html += `</div>`;
+    return html;
+  }
+
+  // Construcción modular del formulario por secciones
+  let formHtml = `
+    <!-- Sección 1: Datos Generales -->
+    <div class="modal-section-card mb-4">
+      <div class="modal-section-header">
+        <i class="fas fa-id-card-clip"></i>
+        <span>Información General</span>
+      </div>
+      <div class="row g-3">
+        ${renderField(0, "col-md-6")}
+        ${renderField(1, "col-md-6")}
+        ${renderField(2, "col-md-6")}
+        ${renderField(3, "col-md-6")}
+        ${renderField(4, "col-12")}
+        ${renderField(6, "col-md-6")}
+        ${renderField(7, "col-md-6")}
+      </div>
+    </div>
+
+    <!-- Sección 2: Plantillas y Mensajería -->
+    <div class="modal-section-card mb-4">
+      <div class="modal-section-header">
+        <i class="fas fa-comments"></i>
+        <span>Contenido de las Plantillas</span>
+      </div>
+      <div class="row g-3">
+        ${renderField(5, "col-12")}
+        ${isSoporte ? renderField(8, "col-12") : ""}
+      </div>
+    </div>
+  `;
+
+  // Sección 3: Estado y Auditoría (Solo si es soporte o si hay campos visibles)
+  if (isSoporte) {
+    formHtml += `
+      <div class="modal-section-card mb-2">
+        <div class="modal-section-header">
+          <i class="fas fa-sliders"></i>
+          <span>Estado y Seguimiento</span>
+        </div>
+        <div class="row g-3">
+          ${renderField(9, "col-md-6")}
+          ${renderField(10, "col-md-6")}
+          ${renderField(11, "col-12")}
+        </div>
+      </div>
+    `;
+  }
+
+  formContainer.innerHTML = formHtml;
 
   const editModal = new bootstrap.Modal(document.getElementById('editModal'));
   editModal.show();
@@ -669,7 +836,10 @@ function openEdit(index) {
  * GUARDAR
  */
 async function saveData() {
-  const idValue = document.getElementById('edit-0').value;
+  const edit0 = document.getElementById('edit-0');
+  if (!edit0) return;
+  const idValue = edit0.value;
+  
   // Buscamos la fila original para no perder campos ocultos al servidor
   let rowData = isNewRecord ? Array(12).fill("") : [...currentData.find(r => r[0] === idValue)];
 
@@ -681,25 +851,38 @@ async function saveData() {
     }
   }
 
-  const res = await callAPI({
-    action: 'update',
-    newData: rowData,
-    rol: userData.rol,
-    isNew: isNewRecord
-  });
+  const btnModalSave = document.getElementById('btnModalSave');
+  if (btnModalSave) {
+    btnModalSave.disabled = true;
+    btnModalSave.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Guardando...';
+  }
 
-  if (res && res.success) {
-    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-    Swal.fire({
-      icon: 'success',
-      title: '¡Guardado!',
-      text: 'El registro se ha actualizado correctamente. Recargando...',
-      timer: 1500,
-      showConfirmButton: false
-    }).then(() => {
-      location.reload();
+  try {
+    const res = await callAPI({
+      action: 'update',
+      newData: rowData,
+      rol: userData.rol,
+      isNew: isNewRecord
     });
-  } else {
-    Swal.fire('Error', res ? res.message : "Error al guardar el registro.", 'error');
+
+    if (res && res.success) {
+      bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+      Swal.fire({
+        icon: 'success',
+        title: '¡Guardado!',
+        text: 'El registro se ha actualizado correctamente.',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        location.reload();
+      });
+    } else {
+      Swal.fire('Error', res ? res.message : "Error al guardar el registro.", 'error');
+    }
+  } finally {
+    if (btnModalSave) {
+      btnModalSave.disabled = false;
+      btnModalSave.innerHTML = '<i class="fas fa-save me-1"></i> Guardar Cambios';
+    }
   }
 }

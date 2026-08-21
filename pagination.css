@@ -1,32 +1,43 @@
-/* Pagination Styles */
+/* ==========================================================================
+   PAGINACIÓN - MINIMALISTA & MODERNA
+   ========================================================================== */
+.pagination-wrapper {
+  background-color: #ffffff;
+}
+
 .pagination {
-    margin-top: 1rem;
+  gap: 4px;
 }
 
 .pagination .page-link {
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-    padding: 0.5rem 0.75rem;
-    margin: 0 2px;
-    border-radius: 6px;
-    transition: all 0.2s;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 0.45rem 0.8rem;
+  margin: 0;
+  border-radius: 8px !important;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  background-color: #ffffff;
 }
 
 .pagination .page-link:hover {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-    font-weight: 600;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #1e293b;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
 }
 
 .pagination .page-item.disabled .page-link {
-    color: #cbd5e1;
-    cursor: not-allowed;
-    background-color: #f8fafc;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  background-color: #f8fafc;
+  border-color: #f1f5f9;
 }
